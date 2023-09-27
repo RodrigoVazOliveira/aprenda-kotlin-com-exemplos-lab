@@ -1,21 +1,51 @@
-// [Template no Kotlin Playground](https://pl.kotl.in/WcteahpyN)
+import java.time.LocalDate
 
 enum class Nivel { BASICO, INTERMEDIARIO, DIFICIL }
 
-class Usuario
+data class Usuario(val nome: String, val email: String, val dataNascimento: LocalDate)
+data class ConteudoEducacional(var nome: String, val duracao: Int = 60) {
+    override fun toString() : String {
+        return "\nConteúdo: $nome\nduração: $duracao"
+    }
+}
 
-data class ConteudoEducacional(var nome: String, val duracao: Int = 60)
-
-data class Formacao(val nome: String, var conteudos: List<ConteudoEducacional>) {
+data class Formacao(val nome: String, val nivel: Nivel, var conteudos: List<ConteudoEducacional>) {
 
     val inscritos = mutableListOf<Usuario>()
     
     fun matricular(usuario: Usuario) {
-        TODO("Utilize o parâmetro $usuario para simular uma matrícula (usar a lista de $inscritos).")
+       	val dataNascimento: LocalDate = usuario.dataNascimento
+        if (dataNascimento.isAfter(LocalDate.now())) {
+            throw Exception("Data de nascimento nao pode ser superior ao dia atual!")
+        }
+        
+        inscritos.add(usuario)
+        println("Usuario adicionado a formacao $nome")
+    }
+   
+   	override fun toString() : String {
+        return "Formacao: $nome\nNivel: $nivel\nConteúdos: $conteudos\n"
     }
 }
 
 fun main() {
-    TODO("Analise as classes modeladas para este domínio de aplicação e pense em formas de evoluí-las.")
-    TODO("Simule alguns cenários de teste. Para isso, crie alguns objetos usando as classes em questão.")
+    val usuarioUm = Usuario("Fulano de tal", "fulanoDeTal@bol.com.br", LocalDate.parse("1999-11-01"))
+    val usuarioDois = Usuario("Fulano de tal", "fulanoDeTal@bol.com.br", LocalDate.parse("1999-11-01"))
+  	val usuarioTres = Usuario("Fulano de tal", "fulanoDeTal@bol.com.br", LocalDate.parse("2024-11-01"))  
+    
+    val conteudoEducacionalUm = ConteudoEducacional("Kotlin")
+    val conteudoEducacionalDois = ConteudoEducacional("Java")
+    val conteudoEducacionalTres = ConteudoEducacional("Go", 80)
+    
+    val formacao = Formacao("backend", Nivel.INTERMEDIARIO, listOf(conteudoEducacionalUm, conteudoEducacionalDois, conteudoEducacionalTres))
+    
+    try {
+        formacao.matricular(usuarioUm)
+    	formacao.matricular(usuarioDois)
+        formacao.matricular(usuarioTres)
+    } catch (e: Exception) {
+        println("Ocorreu um problema ao adiconar um novo usuario. erro: ${e.message}")
+    } finally {
+        println(formacao)
+    }
 }
